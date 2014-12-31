@@ -107,9 +107,11 @@ ZoomProof.prototype.enable = function(json) {
 		.attr('src', imageUrl)
 		.css({
 			position: 'absolute',
-			top: '50%',
-			left: '50%',
-			transition: '.4s all'
+			top: 0,
+			left: 0,
+			transition: '.4s all',
+			padding: '25% 50%',
+			background: 'white'
 		})
 		.on('load', function() {
 			ratio = $(this).width() / self.data.size.width;
@@ -125,7 +127,6 @@ ZoomProof.prototype.enable = function(json) {
 			right: 0,
 			borderRadius: 6,
 			overflow: 'hidden',
-			background: 'white',
 			cursor: 'move'
 		})
 		.draggable();
@@ -234,7 +235,9 @@ ZoomProof.prototype.enable = function(json) {
 		if(!words) {
 			return;
 		}
-		highlight();
+		doWithDelay(function() {
+		    highlight();
+		}, 200);
 	}).trigger('change');
 };
 
