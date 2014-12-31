@@ -230,14 +230,14 @@ ZoomProof.prototype.enable = function(json) {
 			self.update(function(){
 				highlight();
 			});
-		}, 200);
+		}, 50);
 	}).on('keyup click focus', function(e) {
 		if(!words) {
 			return;
 		}
 		doWithDelay(function() {
 		    highlight();
-		}, 200);
+		}, 50);
 	}).trigger('change');
 };
 
