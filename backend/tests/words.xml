@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE DjVuXML PUBLIC "-//W3C//DTD DjVuXML 1.1//EN" "pubtext/DjVuXML-s.dtd">
+<DjVuXML>
+<HEAD>file://localhost/home/user/ws/SAE5.djvu</HEAD>
+<BODY>
+<OBJECT data="file://localhost/home/user/ws/SAE5.djvu" type="image/x.djvu" height="5653" width="4333" usemap="page0027.djvu" >
+<PARAM name="DPI" value="600" />
+<PARAM name="GAMMA" value="2.200000" />
+<PARAM name="PAGE" value="page0027.djvu" />
+    <HIDDENTEXT>
+      <PAGECOLUMN>
+        <REGION>
+          <PARAGRAPH>
+            <LINE>
+              <WORD coords="122,436,328,373">Lorem</WORD>
+              <WORD><CHARACTER coords="329,436,378,389"> </CHARACTER></WORD>
+              <WORD coords="379,435,546,388">ipsum</WORD>
+              <WORD><CHARACTER coords="547,435,590,373"> </CHARACTER></WORD>
+              <WORD coords="591,434,836,373">dolor</WORD>
+              <WORD><CHARACTER coords="837,424,887,374"> </CHARACTER></WORD>
+              <WORD coords="591,434,836,373">sit</WORD>
+              <WORD><CHARACTER coords="1278,435,1327,376"> </CHARACTER></WORD>
+              <WORD coords="1328,424,1432,376">amet, </WORD>
+            </LINE>
+          </PARAGRAPH>
+        </REGION>
+      </PAGECOLUMN>
+    </HIDDENTEXT>
+</OBJECT>
+<MAP name="page0027.djvu"/>
+</BODY>
+</DjVuXML>

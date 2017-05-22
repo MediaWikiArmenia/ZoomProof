@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE DjVuXML PUBLIC "-//W3C//DTD DjVuXML 1.1//EN" "pubtext/DjVuXML-s.dtd">
+<DjVuXML>
+<HEAD>file://localhost/home/user/ws/SAE1.djvu</HEAD>
+<BODY>
+<OBJECT data="file://localhost/home/user/ws/SAE1.djvu" type="image/x.djvu" height="4324" width="3291" usemap="page0027.djvu" >
+<PARAM name="DPI" value="600" />
+<PARAM name="GAMMA" value="2.200000" />
+<PARAM name="PAGE" value="page0027.djvu" />
+    <HIDDENTEXT>
+      <PAGECOLUMN>
+        <REGION>
+          <PARAGRAPH>
+            <LINE coords="2488,129,3153,72">
+Lorem ispum            </LINE>
+            <LINE coords="107,272,1090,218">
+dolor sir amet            </LINE>
+            <LINE coords="107,329,1091,268">
+consectetur adipiscing elit,            </LINE>
+            <LINE coords="107,387,1090,334">
+sed do eiusmod tempor incididunt ut             </LINE>
+            <LINE coords="105,444,1088,393">
+labore et dolore magna aliqua.            </LINE>
+		  </PARAGRAPH>
+        </REGION>
+      </PAGECOLUMN>
+    </HIDDENTEXT>
+</OBJECT>
+<MAP name="page0027.djvu"/>
+</BODY>
+</DjVuXML>
