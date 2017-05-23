@@ -25,20 +25,30 @@ def process_single_page(fileinfo, file_sha1, page):
   json_object = xml_to_json.convert_from_string(xml_string)
   data_ops.save_json_page(json_object, file_sha1, page)
 
-def page_request(file_sha1, page):
-  """entry point for processing a request 
-     by sha1 checksum for the file and a page number"""
+def sanity_check_request(file_sha1, page):
+  """check the request against common errors:
+     - page number negative?
+     - file can't be found in wiki commons?
+     - file is not a djvu?
+     - requested page is > than file pagecount? """
+  #TODO file can't be found in wiki commons
   if page < 1:
-    return build_error_response("Negative page number")
+    return build_error_response("Negative page number"), {}
 
   #get file information from the wikicommons API
   response = wiki_api.query_file_information(file_sha1)
   fileinfo = wiki_api.process_query_response(response)
 
   if 'djvu' not in fileinfo['mime']:
-    return build_error_response("Not a valid djvu file.")
-  if page > fileinfo['pagecount']:
-    return build_error_response("Page doesn't exist.")
+    return build_error_response("Not a valid djvu file."), {}
+  elif page > fileinfo['pagecount']:
+    return build_error_response("Page doesn't exist."), {}
+  else:
+    return {}, fileinfo
+
+def invoke_conversion(file_sha1, page, fileinfo):
+  """entry point for processing a valid request 
+     by sha1 checksum for the file, a page number and the fileinfo dictionary"""
 
   #download the .djvu file
   data_ops.download_djvu_file(fileinfo['url'], fileinfo['filename'])
@@ -55,12 +65,3 @@ def page_request(file_sha1, page):
   data_ops.clean_up(fileinfo['filename'])
 
   return build_error_response("Building desired page, check back in a minute.")
-
-  #TODO into specification file
-  #checks:
-  # if page number is negative, return appropriate error
-  # if json page for that sha1 exists, return it
-  # if no file for that sha1 can be found from the API, return appropriate error
-  # if file is not a djvu, return appropriate error
-  # if page is > than pagecount for the file, return appropriate error
-  # else: return to check back in a minute and do our processing
