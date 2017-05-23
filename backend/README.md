@@ -2,6 +2,7 @@
 ## requirements
 * python >= `3.5`
 * install required python packages via `pip install -r requirements.txt` from `requirements.txt`
+* `djvutoxml` command line tool (e.g. installed on a Ubuntu system via `sudo apt-get install djvulibre-bin`)
 
 ## running tests
 `python -m unittest discover ./tests/`
@@ -19,5 +20,5 @@ the server needs 3 components to run
 
 ## API endpoints
 `/sha1/page_int`
- * will return `page_int.json` for the `.djvu` file specified by the `sha1` if already cached
+ * will return `{page_int}.json` for the `.djvu` file specified by the `sha1` if already cached
  * will start conversion of the `.djvu` file specified by the `sha1` if not already cached and return a JSON notification about that
