@@ -49,10 +49,10 @@ def page_request(file_sha1, page):
       process_single_page(fileinfo, file_sha1, p)
   #then convert all the rest from that file
   for p in range(1, fileinfo['pagecount'] + 1):
-    if not json_page_is_cached(file_sha1, p):
+    if not data_ops.json_page_is_cached(file_sha1, p):
       process_single_page(fileinfo, file_sha1, p)
 
-  #data_ops.clean_up(fileinfo['filename'])
+  data_ops.clean_up(fileinfo['filename'])
 
   return build_error_response("Building desired page, check back in a minute.")
 

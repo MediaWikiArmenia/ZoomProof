@@ -1,6 +1,7 @@
 import os
 import json
 import config
+import requests
 
 def save_json_page(json_object, file_sha1, page):
   """save the JSON object for this page from the file with file_sha1 in
@@ -11,7 +12,9 @@ def save_json_page(json_object, file_sha1, page):
 
   #save json file
   with open('{}{}/{}.json'.format(config.server['datadir'], file_sha1, page), 'w', encoding='utf-8') as json_file:
-    json_file.write(json.dumps(json_object, ensure_ascii=False))
+    #create a JSON string, allowing utf-8 characters, compact version without whitespace
+    json_string = json.dumps(json_object, ensure_ascii=False, separators=(',', ':'))
+    json_file.write(json_string)
 
 def json_page_is_cached(file_sha1, page):
   """check if the processed JSON for the page in that file is already available"""
