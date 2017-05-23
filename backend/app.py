@@ -4,15 +4,21 @@ from redis import Redis
 import process_request
 import data_ops
 import logger
+import config
+
+#ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
+redis_hostname = config.server['redis_hostname_production']
+redis_port = config.server['redis_port']
 
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = 'redis://{}:{}/0'.format(redis_hostname, redis_port)
+app.config['CELERY_RESULT_BACKEND'] = 'redis://{}:{}/0'.format(redis_hostname, redis_port)
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
-redis = Redis()
+redis = Redis(host=redis_hostname, port=redis_port)
+redis.delete('zoomproof_processing')
 
 logger.init_loggers()
 
@@ -40,11 +46,11 @@ def process_request_async(sha1, page, fileinfo):
   #we are maintaining a redis set with all sha1s we are currently converting
   #if we are trying to trigger the same conversion twice, it will simply return here
   #on the second attempt
-  if redis.sismember('processing', sha1):
+  if redis.sismember('zoomproof_processing', sha1):
     return
 
-  #add this sha1 to the reddis set
-  redis.sadd('processing', sha1)
+  #add this sha1 to the redis set
+  redis.sadd('zoomproof_processing', sha1)
   process_request.invoke_conversion(sha1, page, fileinfo)
-  #remove this sha1 from the reddis set once done
-  redis.srem('processing', sha1)
+  #remove this sha1 from the redis set once done
+  redis.srem('zoomproof_processing', sha1)

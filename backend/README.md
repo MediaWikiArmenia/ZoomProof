@@ -9,9 +9,9 @@
 
 ## running the server
 the server needs 3 components to run
- 1. `redis` database server, start via `redis-server`
- 2. `celery` task queue, start via `celery worker -A server.celery` (n.b. that the `{}.celery` part has to be the same as the name of the python module where the `celery` object will be created (which is in `server.py` in our case))
- 3. `flask` web framework, start via `export FLASK_APP=server.py` and then `flask run`
+ 1. `redis` database server, start via `redis-server` (note: you do not need to start your own server when deploying on Wikitech Tool Lab, also make sure to use the 'production' settings in `app.py` when doing so)
+ 2. `celery` task queue, start via `celery worker -A app.celery` (n.b. that the `{}.celery` part has to be the same as the name of the python module where the `celery` object will be created (which is in `app.py` in our case))
+ 3. `flask` web framework, start via `export FLASK_APP=app.py` and then `flask run`
 
 ## component explanation
 * `redis` is used for handling `celery`s task queue and also for a thread-safe lookup of which `.djvu` files we are currently converting, such that we never start a conversion twice on subsequent requests

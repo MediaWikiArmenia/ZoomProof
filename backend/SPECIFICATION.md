@@ -7,7 +7,7 @@
 * sha1 is the sha1 checksum of the `.djvu` you want to have the `JSON` representation of
 * page\_int is a positive integer indicating the page you are querying for
 
-* if sha1 is a string and page\_int is a positive integer you will receive a `JSON` answer, if not you will get a `403`
+* if sha1 is a string and page\_int is a positive integer you will receive a `JSON` answer, if not you will get a `404`
 
 ## JSON format
 * a succesful `JSON` response format is as in the following example

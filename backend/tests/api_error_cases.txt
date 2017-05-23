@@ -1,0 +1,5 @@
+/5aaf9aae1afcfa3d0919375a1c71d580be53e257/10    -> not a valid djvu
+/59e7e92cc38e74dae708b1073fadc6f7f24ebe54/800   -> page doesn't exist
+/59e7e92cc38e74dae708b1073fadc6f7f24eb54/100   -> not a valid sha1 hash
+/59e7e92cc38e74dae708b1073fadc6f7f24eb54/-1   -> 404
+/59e7e92cc38e74dae708b1073fadc6f7f24ebe54/1   -> no text on page
