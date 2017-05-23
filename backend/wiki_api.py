@@ -12,7 +12,7 @@ def query_file_information(file_sha1):
   payload = {
     'action': 'query',
     'format': 'json',
-    'servedby': 1,                    #return response server name for logging purposes
+    'servedby': 1,                    #return response server name for potential logging
     'list': 'allimages',              #using the allimages API
     'aiprop': 'dimensions|mime|url',  #file properties we want to have returned
     'aisha1': file_sha1               #specifying the file by sha1 checksum
@@ -25,13 +25,17 @@ def query_file_information(file_sha1):
 
 def process_query_response(response):
   """process the JSON information about a file returned from the API"""
-  info = response['query']['allimages'][0]
-  fileinfo = dict()
+  #if we got an error 
+  if 'error' in response:
+    return {'error': response['error']['info']}
+  else:
+    fileinfo = dict()
+    info = response['query']['allimages'][0]
 
-  fileinfo['response_server'] = response['servedby']
-  fileinfo['filename'] = info['name']
-  fileinfo['pagecount'] = info['pagecount']
-  fileinfo['url'] = info['url']
-  fileinfo['mime'] = info['mime']
+    fileinfo['response_server'] = response['servedby']
+    fileinfo['filename'] = info['name']
+    fileinfo['pagecount'] = info['pagecount']
+    fileinfo['url'] = info['url']
+    fileinfo['mime'] = info['mime']
 
-  return fileinfo
+    return fileinfo
