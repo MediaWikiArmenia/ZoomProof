@@ -3,8 +3,11 @@
 * python >= `3.5`
 * install required python packages via `pip install -r requirements.txt` from `requirements.txt`
 
+## running tests
+`python -m unittest discover ./tests/`
+
 ## running the server
-* the server needs 3 components to run
+the server needs 3 components to run
  1. `redis` database server, start via `redis-server`
  2. `celery` task queue, start via `celery worker -A server.celery` (n.b. that the `{}.celery` part has to be the same as the name of the python module where the `celery` object will be created (which is in `server.py` in our case))
  3. `flask` web framework, start via `export FLASK_APP=server.py` and then `flask run`
@@ -15,6 +18,6 @@
 * `flask` is a minimal web framework for python and is used to implement the backend API
 
 ## API endpoints
-* `/sha1/page_int`
+`/sha1/page_int`
  * will return `page_int.json` for the `.djvu` file specified by the `sha1` if already cached
  * will start conversion of the `.djvu` file specified by the `sha1` if not already cached and return a JSON notification about that
