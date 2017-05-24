@@ -19,6 +19,6 @@ the server needs 3 components to run
 * `flask` is a minimal web framework for python and is used to implement the backend API
 
 ## API endpoints
-`/sha1/page_int`
- * will return `{page_int}.json` for the `.djvu` file specified by the `sha1` if already cached
+`/djvujson/sha1/page.json`
+ * will return `{page}.json` for the `.djvu` file specified by the `sha1` if already cached
  * will start conversion of the `.djvu` file specified by the `sha1` if not already cached and return a JSON notification about that

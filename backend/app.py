@@ -7,7 +7,7 @@ import logger
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
-redis_hostname = config.server['redis_hostname_local']
+redis_hostname = config.server['redis_hostname_production']
 redis_port = config.server['redis_port']
 
 app = Flask(__name__)
@@ -22,9 +22,12 @@ redis.delete('zoomproof_processing')
 
 logger.init_loggers()
 
-@app.route('/<string:sha1>/<int:page>')
+@app.route('/djvujson/<string:sha1>/<int:page>.json')
 def request_page(sha1, page):
   #check if the desired page is already cached
+  #NOTE: this is actually not required within the current app configuration...
+  #...because atm the nginx server serves the cached file if available and...
+  #...redirects to the flask app only if no cached file is available
   if data_ops.json_page_is_cached(sha1, page):
     logger.log_info(sha1, page, "Page succesfully returned.")
     return jsonify(data_ops.get_cached_json_page(sha1, page))

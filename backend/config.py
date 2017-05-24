@@ -1,5 +1,5 @@
 server = {
-  'datadir':      './data/',
+  'datadir':      './data/djvujson/',
   'logdir':       './log/',
   'tmpdir':       './tmp/',
   'user_agent':   'ZoomProof',
