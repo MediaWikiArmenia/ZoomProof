@@ -7,7 +7,7 @@ import logger
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
-redis_hostname = config.server['redis_hostname_production']
+redis_hostname = config.server['redis_hostname_local']
 redis_port = config.server['redis_port']
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ def request_page(sha1, page):
       process_request_async.delay(sha1, page, fileinfo)
       return jsonify(process_request.build_error_response("Processing the file, check back in a minute."))
 
-@celery.task
+@celery.task(name='process_request_async')
 def process_request_async(sha1, page, fileinfo):
   """Background task to process a djvu file in a non-blocking way."""
   #we are maintaining a redis set with all sha1s we are currently converting

@@ -1,6 +1,6 @@
 # backend server of ZoomProof
 ## requirements
-* python >= `3.5`
+* python >= `3.4`
 * install required python packages via `pip install -r requirements.txt` from `requirements.txt`
 * `djvutoxml` command line tool (e.g. installed on a Ubuntu system via `sudo apt-get install djvulibre-bin`)
 
@@ -11,7 +11,7 @@
 the server needs 3 components to run
  1. `redis` database server, start via `redis-server` (note: you do not need to start your own server when deploying on Wikitech Tool Lab, also make sure to use the 'production' settings in `app.py` when doing so)
  2. `celery` task queue, start via `celery worker -A app.celery` (n.b. that the `{}.celery` part has to be the same as the name of the python module where the `celery` object will be created (which is in `app.py` in our case))
- 3. `flask` web framework, start via `export FLASK_APP=app.py` and then `flask run`
+ 3. `flask` web framework, start via `export FLASK_APP=app.py` and then `flask run` (note: does not need to be started like this in a production environment, there a wsgi or uwsgi compatible web server will start the flask app)
 
 ## component explanation
 * `redis` is used for handling `celery`s task queue and also for a thread-safe lookup of which `.djvu` files we are currently converting, such that we never start a conversion twice on subsequent requests
