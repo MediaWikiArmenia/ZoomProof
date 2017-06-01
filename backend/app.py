@@ -7,7 +7,7 @@ import logger
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
-redis_hostname = config.server['redis_hostname_production']
+redis_hostname = config.server['redis_hostname_local']
 redis_port = config.server['redis_port']
 
 app = Flask(__name__)
@@ -22,6 +22,11 @@ redis.delete('zoomproof_processing')
 
 logger.init_loggers()
 
+def set_no_cache(response):
+  """set the header of this response to no-cache"""
+  response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+  response.headers['Pragma'] = 'no-cache'
+
 @app.route('/')
 def index():
   """return an index.html file as a README description of the tool"""
@@ -34,10 +39,7 @@ def request_page(sha1, page):
   #...because atm the nginx server serves the cached file if available and...
   #...redirects to the flask app only if no cached file is available
   if data_ops.json_page_is_cached(sha1, page):
-    #NOTE: as of now the logger won't log the correct filename here (because we won't know it at this point)
-    #but this is not an issue because the webserver will usually serve the static .json files once processed
-    logger.log_info(sha1, "", page, "Page succesfully returned.")
-    return jsonify(data_ops.get_cached_json_page(sha1, page))
+    return return_cached_page_json(sha1, page)
   #if it is not yet cached
   else:
     error_json, fileinfo = process_request.sanity_check_request(sha1, page)
@@ -48,7 +50,16 @@ def request_page(sha1, page):
     else:
       #asynchronous call to invoke processing the file
       process_request_async.delay(sha1, page, fileinfo)
-      return jsonify(process_request.build_error_response("Processing the file, check back in a minute."))
+      response = jsonify(process_request.build_error_response("Processing the file, check back in a minute."))
+      set_no_cache(response)
+      return response
+
+def return_cached_page_json(sha1, page):
+  """return json of the cached page"""
+  #NOTE: as of now the logger won't log the correct filename here (because we won't know it at this point)
+  #but this is not an issue because the webserver will usually serve the static .json files once processed
+  logger.log_info(sha1, "", page, "Page succesfully returned.")
+  return jsonify(data_ops.get_cached_json_page(sha1, page))
 
 @celery.task(name='process_request_async')
 def process_request_async(sha1, page, fileinfo):
