@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from celery import Celery
 from redis import Redis
 import process_request
@@ -21,6 +21,11 @@ redis = Redis(host=redis_hostname, port=redis_port)
 redis.delete('zoomproof_processing')
 
 logger.init_loggers()
+
+@app.route('/')
+def index():
+  """return an index.html file as a README description of the tool"""
+  return render_template('index.html')
 
 @app.route('/djvujson/<string:sha1>/<int:page>.json')
 def request_page(sha1, page):
