@@ -33,7 +33,7 @@ def sanity_check_request(file_sha1, page):
   response = wiki_api.query_file_information(file_sha1)
   fileinfo = wiki_api.process_query_response(response)
 
-  #if fileinfo came back from the wiki commons API with an error
+  #if fileinfo came back from the wiki commons API with an error or empty
   if 'error' in fileinfo:
     error_msg = fileinfo['error']
     logger.log_error(file_sha1, page, error_msg)

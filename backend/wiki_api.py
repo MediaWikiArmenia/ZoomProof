@@ -28,6 +28,9 @@ def process_query_response(response):
   #if we got an error 
   if 'error' in response:
     return {'error': response['error']['info']}
+  #or if nothing was found
+  elif not response['query']['allimages']:
+    return {'error': "This SHA1 could not be found."}
   else:
     fileinfo = dict()
     info = response['query']['allimages'][0]

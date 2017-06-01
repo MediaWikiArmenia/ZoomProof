@@ -3,11 +3,11 @@
 * the backend provides a simple API for requesting the text content of a certain page of a `.djvu` file and get a `JSON` response
 
 ## API
-`/sha1/page_int`
+`/djvujson/sha1/page.json`
 * sha1 is the sha1 checksum of the `.djvu` you want to have the `JSON` representation of
-* page\_int is a positive integer indicating the page you are querying for
+* page is a positive integer indicating the page you are querying for
 
-* if sha1 is a string and page\_int is a positive integer you will receive a `JSON` answer, if not you will get a `404`
+* if sha1 is a string and page is a positive integer you will receive a `JSON` answer, if not you will get a `404`
 
 ## JSON format
 * a succesful `JSON` response format is as in the following example
@@ -46,7 +46,7 @@
 * the sha1 can not be found via the wiki commons API
 
 ## backend pipeline
-1. if the desired page for that sha1 is already cached, return it immediately [log success]
+1. if the desired page for that sha1 is already cached, return it immediately by the webserver (don't even redirect to the flask app for that)
 2. download metadata for the sha1 from wiki commons API
 3. based on that metadata check if the the page or the sha1 are one of the aforementioned error cases, return an error [log error]
 4. if the desired page and sha1 are valid, initiate the conversion of the entire document in a non-blocking fashion
