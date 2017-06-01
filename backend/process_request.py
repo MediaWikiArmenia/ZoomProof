@@ -59,8 +59,8 @@ def invoke_conversion(file_sha1, page, fileinfo):
   data_ops.download_djvu_file(fileinfo['url'], fileinfo['filename'])
   logger.log_info(file_sha1, page, "Succesfully downloaded .djvu file.")
 
-  #first convert the +-3 around the desired page
-  for p in range(page-3, page+4):
+  #first convert the desired page and the -cache_before and +cache_after pages around it
+  for p in range(page - config.server['cache_before'], page + config.server['cache_after'] + 1):
     if p > 1 and p <= fileinfo['pagecount']:
       process_single_page(fileinfo, file_sha1, p)
   #then convert all other pages from that file
