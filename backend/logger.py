@@ -11,15 +11,15 @@ def setup_logger(name, filename, logging_level):
   formatter = logging.Formatter('%(asctime)s : %(message)s')
 
   #write to a log file
-  fileHandler = logging.FileHandler(filename, mode='a')
+  fileHandler = logging.FileHandler(filename, mode='a', encoding='utf-8')
   fileHandler.setFormatter(formatter)
 
   logger.addHandler(fileHandler)
 
-def log_info(sha1, page, info_msg):
+def log_info(sha1, filename, page, info_msg):
   """log an info event"""
   log_info = logging.getLogger('log_info')
-  log_info.info("file: {}, page: {}, {}".format(sha1, page, info_msg))
+  log_info.info("file: {} - {}, page: {}, {}".format(sha1, filename, page, info_msg))
 
 def log_error(sha1, page, error_msg):
   """log an error event"""

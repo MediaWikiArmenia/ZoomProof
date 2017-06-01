@@ -57,7 +57,7 @@ def invoke_conversion(file_sha1, page, fileinfo):
 
   #download the .djvu file
   data_ops.download_djvu_file(fileinfo['url'], fileinfo['filename'])
-  logger.log_info(file_sha1, page, "Succesfully downloaded .djvu file.")
+  logger.log_info(file_sha1, fileinfo['filename'], page, "Succesfully downloaded .djvu file.")
 
   #first convert the desired page and the -cache_before and +cache_after pages around it
   for p in range(page - config.server['cache_before'], page + config.server['cache_after'] + 1):
@@ -69,4 +69,4 @@ def invoke_conversion(file_sha1, page, fileinfo):
       process_single_page(fileinfo, file_sha1, p)
 
   data_ops.clean_up(fileinfo['filename'])
-  logger.log_info(file_sha1, page, "Succesfully converted .djvu file.")
+  logger.log_info(file_sha1, fileinfo['filename'], page, "Succesfully converted .djvu file.")

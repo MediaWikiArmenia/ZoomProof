@@ -34,7 +34,9 @@ def request_page(sha1, page):
   #...because atm the nginx server serves the cached file if available and...
   #...redirects to the flask app only if no cached file is available
   if data_ops.json_page_is_cached(sha1, page):
-    logger.log_info(sha1, page, "Page succesfully returned.")
+    #NOTE: as of now the logger won't log the correct filename here (because we won't know it at this point)
+    #but this is not an issue because the webserver will usually serve the static .json files once processed
+    logger.log_info(sha1, "", page, "Page succesfully returned.")
     return jsonify(data_ops.get_cached_json_page(sha1, page))
   #if it is not yet cached
   else:
