@@ -4,7 +4,7 @@ import djvu_to_xml
 import xml_to_json
 import wiki_api
 import data_ops
-import logger
+from logger import log_error, log_info
 import config
 
 def build_error_response(error_text):
@@ -12,6 +12,7 @@ def build_error_response(error_text):
      we want to return a custom error response in the same format"""
   return {
     'errors': error_text,
+    'size': {},
     'map': []
   }
 
@@ -33,20 +34,25 @@ def sanity_check_request(file_sha1, page):
   response = wiki_api.query_file_information(file_sha1)
   fileinfo = wiki_api.process_query_response(response)
 
+  try:
+    filename = fileinfo['filename']
+  except:
+    filename = 'unknown file'
+
   #if fileinfo came back from the wiki commons API with an error or empty
   if 'error' in fileinfo:
     error_msg = fileinfo['error']
-    logger.log_error(file_sha1, page, error_msg)
+    log_error(file_sha1, filename, page, error_msg)
     return build_error_response(error_msg), {}
   #if the file is not a .djvu
   elif 'djvu' not in fileinfo['mime'].lower():
     error_msg = "Not a valid djvu file."
-    logger.log_error(file_sha1, page, error_msg)
+    log_error(file_sha1, filename, page, error_msg)
     return build_error_response(error_msg), {}
   #if the desired page is greater than the maximum page in the file
-  elif page > fileinfo['pagecount']:
+  elif page > fileinfo['pagecount'] or page < 1:
     error_msg = "Page doesn't exist."
-    logger.log_error(file_sha1, page, error_msg)
+    log_error(file_sha1, filename, page, error_msg)
     return build_error_response(error_msg), {}
   else:
     return {}, fileinfo
@@ -57,7 +63,7 @@ def invoke_conversion(file_sha1, page, fileinfo):
 
   #download the .djvu file
   data_ops.download_djvu_file(fileinfo['url'], fileinfo['filename'])
-  logger.log_info(file_sha1, fileinfo['filename'], page, "Succesfully downloaded .djvu file.")
+  log_info(file_sha1, fileinfo['filename'], page, "Succesfully downloaded .djvu file.")
 
   #first convert the desired page and the -cache_before and +cache_after pages around it
   for p in range(page - config.server['cache_before'], page + config.server['cache_after'] + 1):
@@ -69,4 +75,4 @@ def invoke_conversion(file_sha1, page, fileinfo):
       process_single_page(fileinfo, file_sha1, p)
 
   data_ops.clean_up(fileinfo['filename'])
-  logger.log_info(file_sha1, fileinfo['filename'], page, "Succesfully converted .djvu file.")
+  log_info(file_sha1, fileinfo['filename'], page, "Succesfully converted .djvu file.")

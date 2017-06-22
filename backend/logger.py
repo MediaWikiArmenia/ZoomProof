@@ -21,12 +21,14 @@ def log_info(sha1, filename, page, info_msg):
   log_info = logging.getLogger('log_info')
   log_info.info("file: {} - {}, page: {}, {}".format(sha1, filename, page, info_msg))
 
-def log_error(sha1, page, error_msg):
+def log_error(sha1, filename, page, error_msg):
   """log an error event"""
   log_error = logging.getLogger('log_error')
-  log_error.error("file: {}, page: {}, {}".format(sha1, page, error_msg))
+  log_error.error("file: {} - {}, page: {}, {}".format(sha1, filename, page, error_msg))
 
 def init_loggers():
   """initialize the loggers"""
   setup_logger('log_info', config.server['logdir']+'info.log', logging.INFO)
   setup_logger('log_error', config.server['logdir']+'error.log', logging.ERROR)
+
+init_loggers()

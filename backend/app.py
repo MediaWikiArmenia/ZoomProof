@@ -3,7 +3,7 @@ from celery import Celery
 from redis import Redis
 import process_request
 import data_ops
-import logger
+from logger import log_info
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
@@ -19,8 +19,6 @@ celery.conf.update(app.config)
 
 redis = Redis(host=redis_hostname, port=redis_port)
 redis.delete('zoomproof_processing')
-
-logger.init_loggers()
 
 def set_no_cache(response):
   """set the header of this response to no-cache"""
@@ -58,7 +56,7 @@ def return_cached_page_json(sha1, page):
   """return json of the cached page"""
   #NOTE: as of now the logger won't log the correct filename here (because we won't know it at this point)
   #but this is not an issue because the webserver will usually serve the static .json files once processed
-  logger.log_info(sha1, "", page, "Page succesfully returned.")
+  log_info(sha1, "", page, "Page succesfully returned.")
   return jsonify(data_ops.get_cached_json_page(sha1, page))
 
 @celery.task(name='process_request_async')

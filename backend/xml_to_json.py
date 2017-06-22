@@ -19,7 +19,11 @@ def get_page_size(xml_tree):
   """return width, height from the OBJECT node of the xml tree"""
   width_entry = (xml_tree.xpath("//OBJECT/@width"))
   height_entry = (xml_tree.xpath("//OBJECT/@height"))
-  return int(width_entry[0]), int(height_entry[0])
+  try:
+    width, height = int(width_entry[0]), int(height_entry[0])
+  except KeyError:
+    width, height = -1, -1
+  return width, height
 
 def get_all_coordsnodes(xml_tree):
   """return all nodes from the xml_tree that have a 'coords' attribute"""
