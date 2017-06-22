@@ -1,5 +1,6 @@
 import lxml.etree
 import json
+from collections import OrderedDict
 
 coordsnode_abbrev_lookup = {
     'WORD': 'w',
@@ -67,10 +68,10 @@ def convert_from_string(xml_string):
     }
     map_json.append(json_node)
 
-  json_object = {
-      'errors': errors_json,
-      'size': {'width': page_width, 'height': page_height},
-      'map': map_json
-  }
+  json_object = OrderedDict([
+      ('errors', errors_json),
+      ('size', {'width': page_width, 'height': page_height}),
+      ('map', map_json)
+  ])
 
   return json_object

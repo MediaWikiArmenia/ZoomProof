@@ -1,5 +1,6 @@
 import os
 import json
+from collections import OrderedDict
 import djvu_to_xml
 import xml_to_json
 import wiki_api
@@ -10,11 +11,11 @@ import config
 def build_error_response(error_text):
   """if for some reason we can't return the desired page as JSON
      we want to return a custom error response in the same format"""
-  return {
-    'errors': error_text,
-    'size': {},
-    'map': []
-  }
+  return OrderedDict([
+    ('errors', error_text),
+    ('size', {}),
+    ('map', [])
+  ])
 
 def process_single_page(fileinfo, file_sha1, page):
   """process a single page:

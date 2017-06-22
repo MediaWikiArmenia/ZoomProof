@@ -11,6 +11,7 @@ redis_hostname = config.server['redis_hostname_production']
 redis_port = config.server['redis_port']
 
 app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
 app.config['CELERY_BROKER_URL'] = 'redis://{}:{}/0'.format(redis_hostname, redis_port)
 app.config['CELERY_RESULT_BACKEND'] = 'redis://{}:{}/0'.format(redis_hostname, redis_port)
 
