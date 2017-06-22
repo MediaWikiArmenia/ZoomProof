@@ -1,7 +1,7 @@
 {"errors": "",
 "map":
-[{"t":"\nLorem ispum            ", "c":[2488,129,3153,72],"e":"l"},
-{"t":"\ndolor sir amet            ", "c":[107,272,1090,218],"e":"l"},
-{"t":"\nconsectetur adipiscing elit,            ", "c":[107,329,1091,268],"e":"l"},
-{"t":"\nsed do eiusmod tempor incididunt ut             ", "c":[107,387,1090,334],"e":"l"},
-{"t":"\nlabore et dolore magna aliqua.            ", "c":[105,444,1088,393],"e":"l"}]}
+[{"t":"\nLorem ispum            ", "c":[2488,72,665,57],"e":"l"},
+{"t":"\ndolor sir amet            ", "c":[107,218,983,54],"e":"l"},
+{"t":"\nconsectetur adipiscing elit,            ", "c":[107,268,984,61],"e":"l"},
+{"t":"\nsed do eiusmod tempor incididunt ut             ", "c":[107,334,983,53],"e":"l"},
+{"t":"\nlabore et dolore magna aliqua.            ", "c":[105,393,983,51],"e":"l"}]}

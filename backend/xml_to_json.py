@@ -24,6 +24,16 @@ def get_all_coordsnodes(xml_tree):
                                self::CHARACTER or self::REGION or self::PAGECOLUMNS]
                                [@coords]""")
 
+def convert_coordinates_to_dimensions(coordinates):
+  """converting coordinates of the text bounding box from
+     [left_x, bottom_y, right_x, top_y]
+     to
+     [left_x, top_y, width, height]"""
+  left_x, bottom_y, right_x, top_y = coordinates
+  width = right_x - left_x
+  height = bottom_y - top_y
+  return [left_x, top_y, width, height]
+
 def convert_from_string(xml_string):
   """convert an xml string into the desired JSON object representation"""
   xml_tree = lxml.etree.fromstring(xml_string.encode('utf-8'))
@@ -38,9 +48,10 @@ def convert_from_string(xml_string):
   map_json = []
   for node in coords_nodes:
     #create a single json node as a dictionary
+    coordinates = convert_to_int_list(node.attrib['coords'])
     json_node = {
       't': node.text,
-      'c': convert_to_int_list(node.attrib['coords']),
+      'c': convert_coordinates_to_dimensions(coordinates),
       'e': coordsnode_abbrev_lookup[node.tag]        
     }
     map_json.append(json_node)

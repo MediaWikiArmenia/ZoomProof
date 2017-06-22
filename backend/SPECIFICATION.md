@@ -15,14 +15,14 @@
 ```python
 {
 "map":
-[{"t": "Lorem", "c":[122,436,328,373], "e":"w"},
+[{"t": "Lorem", "c":[2488,72,665,57], "e":"w"},
 ...,],
 "errors": ""
 }
 ```
 
 * map is a list of text data
-* each text datapoint has three attributes: `t` (text as str), `c` (coordinates as int list), `e` (type of text)
+* each text datapoint has three attributes: `t` (text as str), `c` (coordinates [left, top, width, height] as int list), `e` (type of text)
 * the type of text is one of either (w, c, l, r, pc, ph) -> (WORD, CHARACTER, LINE, REGION, PAGECOLUMNS, PARAGRAPH)
 
 * an unsuccesful `JSON` response format is as in the following example
