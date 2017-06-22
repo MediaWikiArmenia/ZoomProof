@@ -15,6 +15,12 @@ def convert_to_int_list(coords_string):
      e.g. '1,2,3,4' -> [1, 2, 3, 4]"""
   return [int(coord) for coord in coords_string.split(',')]
 
+def get_page_size(xml_tree):
+  """return width, height from the OBJECT node of the xml tree"""
+  width_entry = (xml_tree.xpath("//OBJECT/@width"))
+  height_entry = (xml_tree.xpath("//OBJECT/@height"))
+  return int(width_entry[0]), int(height_entry[0])
+
 def get_all_coordsnodes(xml_tree):
   """return all nodes from the xml_tree that have a 'coords' attribute"""
   #xpath query for all nodes in the tree that are either ...
@@ -38,6 +44,7 @@ def convert_from_string(xml_string):
   """convert an xml string into the desired JSON object representation"""
   xml_tree = lxml.etree.fromstring(xml_string.encode('utf-8'))
   coords_nodes = get_all_coordsnodes(xml_tree)
+  page_width, page_height = get_page_size(xml_tree)
 
   #building the errors json object
   errors_json = ""
@@ -52,12 +59,13 @@ def convert_from_string(xml_string):
     json_node = {
       't': node.text,
       'c': convert_coordinates_to_dimensions(coordinates),
-      'e': coordsnode_abbrev_lookup[node.tag]        
+      'e': coordsnode_abbrev_lookup[node.tag]
     }
     map_json.append(json_node)
 
   json_object = {
       'errors': errors_json,
+      'size': {'width': page_width, 'height': page_height},
       'map': map_json
   }
 

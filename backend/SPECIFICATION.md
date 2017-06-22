@@ -17,11 +17,13 @@
 "map":
 [{"t": "Lorem", "c":[2488,72,665,57], "e":"w"},
 ...,],
+"size": {"width": 4333, "height": 5653},
 "errors": ""
 }
 ```
 
 * map is a list of text data
+* size is a dict of the size of that particular page with entries "width" and "height"
 * each text datapoint has three attributes: `t` (text as str), `c` (coordinates [left, top, width, height] as int list), `e` (type of text)
 * the type of text is one of either (w, c, l, r, pc, ph) -> (WORD, CHARACTER, LINE, REGION, PAGECOLUMNS, PARAGRAPH)
 
