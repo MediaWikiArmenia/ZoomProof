@@ -38,7 +38,7 @@ def read_log_n_latest(filename, n):
   """get the last n lines from logfile filename"""
   try:
     with open(filename) as logfile:
-      n_latest = logfile.readlines()[-10:]
+      n_latest = logfile.readlines()[-n:]
     return n_latest[::-1]
   except IOError:
     log_error = logging.getLogger('log_error')
@@ -48,6 +48,8 @@ def get_latest_log_messages():
   """return the n latest (define in config) messages from the
      error log and the info log"""
   n = config.server['n_latest_log_messages']
+  if n < 1:
+    return [], []
   latest_errors = read_log_n_latest(config.server['logdir'] + 'error.log', n)
   latest_infos = read_log_n_latest(config.server['logdir'] + 'info.log', n)
   return latest_errors, latest_infos
