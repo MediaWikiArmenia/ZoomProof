@@ -6,5 +6,23 @@
 	</head>
 	<body>
 		Serving DjVu JSON data for ZoomProof Wikisource Gadget.
+		<br>
+		<br>
+
+		info log:
+		<br>
+		{% for info in latest_infos %}
+			{{ info }}
+			<br>
+		{% endfor %}
+
+		<br>
+
+		error log:
+		<br>
+		{% for error in latest_errors %}
+			{{ error }}
+			<br>
+		{% endfor %}
 	</body>
 </html>

@@ -7,5 +7,6 @@ server = {
   'user_agent':                 'ZoomProof',
   'redis_hostname_local':       'localhost',
   'redis_hostname_production':  'tools-redis',
-  'redis_port':                 6379
+  'redis_port':                 6379,
+  'n_latest_log_messages': 10
 }

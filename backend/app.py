@@ -3,11 +3,11 @@ from celery import Celery
 from redis import Redis
 import process_request
 import data_ops
-from logger import log_info
+from logger import log_info, get_latest_log_messages
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
-redis_hostname = config.server['redis_hostname_production']
+redis_hostname = config.server['redis_hostname_local']
 redis_port = config.server['redis_port']
 
 app = Flask(__name__)
@@ -28,8 +28,10 @@ def set_no_cache(response):
 
 @app.route('/')
 def index():
-  """return an index.html file as a README description of the tool"""
-  return render_template('index.html')
+  """return an index.html file as a README description of the tool
+     and showing the latest (define in config) messages from the error and info log"""
+  latest_errors, latest_infos = get_latest_log_messages()
+  return render_template('index.html', latest_errors=latest_errors, latest_infos=latest_infos)
 
 @app.route('/djvujson/<string:sha1>/<int:page>.json')
 def request_page(sha1, page):
