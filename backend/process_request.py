@@ -14,6 +14,7 @@ def build_error_response(error_text):
   return OrderedDict([
     ('errors', error_text),
     ('size', {}),
+    ('statistics', {}),
     ('map', [])
   ])
 

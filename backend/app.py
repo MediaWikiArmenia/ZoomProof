@@ -35,12 +35,6 @@ def index():
 
 @app.route('/djvujson/<string:sha1>/<int:page>.json')
 def request_page(sha1, page):
-  #check if celery is active
-  if celery.control.inspect().active() is None:
-    response = jsonify(process_request.build_error_response("Celery is not active."))
-    log_error(error_msg="Celery is not active.")
-    set_no_cache(response)
-    return response
   #check if the desired page is already cached
   #NOTE: this is actually not required within the current app configuration...
   #...because atm the nginx server serves the cached file if available and...
@@ -48,6 +42,12 @@ def request_page(sha1, page):
   if data_ops.json_page_is_cached(sha1, page):
     return return_cached_page_json(sha1, page)
   #if it is not yet cached
+  #check if celery is active
+  elif celery.control.inspect().active() is None:
+    response = jsonify(process_request.build_error_response("Celery is not active."))
+    log_error(error_msg="Celery is not active.")
+    set_no_cache(response)
+    return response
   else:
     error_json, fileinfo = process_request.sanity_check_request(sha1, page)
     #when something is not right with the request, return an error

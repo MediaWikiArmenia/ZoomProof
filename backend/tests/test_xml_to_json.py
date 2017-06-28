@@ -3,6 +3,7 @@ import xml_to_json
 import json
 
 class TestXMLToJSON(unittest.TestCase):
+
   def test_convert_to_json_object(self):
     """test xml to json conversion on the specification files"""
     test_cases = (

@@ -1,6 +1,6 @@
 import lxml.etree
 import json
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 
 coordsnode_abbrev_lookup = {
     'WORD': 'w',
@@ -45,6 +45,54 @@ def convert_coordinates_to_dimensions(coordinates):
   height = bottom_y - top_y
   return [left_x, top_y, width, height]
 
+def calculate_mean(numbers):
+  """calculate the mean of a list of numbers"""
+  return round(sum(numbers) / len(numbers), 3)
+
+def calculate_median(numbers):
+  """calculate the median of a list of numbers"""
+  l = len(numbers)
+  center_pos = (l - 1) // 2
+  #if numbers has an odd length
+  if l % 2 == 1: 
+    #return center element
+    return numbers[center_pos]
+  #if numbers has an even length
+  else:
+    #return mean of two center elements
+    return round((numbers[center_pos] + numbers[center_pos + 1]) / 2, 3)
+
+def calculate_mode(numbers):
+  """calculate the mode (the most common element) of numbers"""
+  count = Counter(numbers)
+  #return element of (element, count) that has the highest count
+  return count.most_common(1)[0][0]
+
+def get_width_height_statistics(width_list, height_list):
+  """calculate some statistics such as max, min, average, median and mode
+     of the widths and heights of all text objects on the page"""
+  width_list, height_list = sorted(width_list), sorted(height_list)
+  #width statistics
+  max_width = max(width_list)
+  min_width = min(width_list)
+  average_width = calculate_mean(width_list)
+  median_width = calculate_median(width_list)
+  mode_width = calculate_mode(width_list)
+  #height statistics
+  max_height = max(height_list)
+  min_height = min(height_list)
+  average_height = calculate_mean(height_list)
+  median_height = calculate_median(height_list)
+  mode_height = calculate_mode(height_list)
+
+  return {
+      'max': [max_width, max_height],
+      'min': [min_width, min_height],
+      'average': [average_width, average_height],
+      'median': [median_width, median_height],
+      'mode': [mode_width, mode_height]
+      }
+
 def convert_from_string(xml_string):
   """convert an xml string into the desired JSON object representation"""
   xml_tree = lxml.etree.fromstring(xml_string.encode('utf-8'))
@@ -56,21 +104,31 @@ def convert_from_string(xml_string):
   if not coords_nodes:
     errors_json = "No text on page."
 
+  width_list, height_list = [], []
   #building up the map json object one node at a time
   map_json = []
   for node in coords_nodes:
     #create a single json node as a dictionary
     coordinates = convert_to_int_list(node.attrib['coords'])
+    left_x, top_y, width, height = convert_coordinates_to_dimensions(coordinates)
+    width_list.append(width)
+    height_list.append(height)
     json_node = {
       't': node.text,
-      'c': convert_coordinates_to_dimensions(coordinates),
+      'c': [left_x, top_y, width, height],
       'e': coordsnode_abbrev_lookup[node.tag]
     }
     map_json.append(json_node)
 
+  if width_list and height_list:
+    wh_statistics = get_width_height_statistics(width_list, height_list)
+  else:
+    wh_statistics = {}
+
   json_object = OrderedDict([
       ('errors', errors_json),
       ('size', {'width': page_width, 'height': page_height}),
+      ('statistics', wh_statistics),
       ('map', map_json)
   ])
 

@@ -1,5 +1,6 @@
 {"errors": "",
 "size": {"width": 3291, "height": 4324},
+"statistics": {"min": [665, 51], "max": [984, 61], "average": [919.6, 55.2], "median": [983, 54], "mode": [983, 57]},
 "map":
 [{"t":"\nLorem ispum            ", "c":[2488,72,665,57],"e":"l"},
 {"t":"\ndolor sir amet            ", "c":[107,218,983,54],"e":"l"},

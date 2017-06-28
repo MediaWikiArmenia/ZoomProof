@@ -18,12 +18,14 @@
 [{"t": "Lorem", "c":[2488,72,665,57], "e":"w"},
 ...,],
 "size": {"width": 4333, "height": 5653},
+"statistics": {"min": [665, 51], "max": [984, 61], "average": [919.6, 55.2], "median": [983, 54], "mode": [983, 57]},
 "errors": ""
 }
 ```
 
 * map is a list of text data
 * size is a dict of the size of that particular page with entries "width" and "height"
+* statistics is a dict of statistical information about all text objects on a page (currently min, max, average, median, mode) where each entry is a 2-element list [width, height]
 * each text datapoint has three attributes: `t` (text as str), `c` (coordinates [left, top, width, height] as int list), `e` (type of text)
 * the type of text is one of either (w, c, l, r, pc, ph) -> (WORD, CHARACTER, LINE, REGION, PAGECOLUMNS, PARAGRAPH)
 
@@ -31,13 +33,16 @@
 
 ```python
 {
-"map":
-[],
+"map": [],
+"size": {},
+"statistics": {},
 "errors": "error text"
 }
 ```
 
 * map is an empty list
+* size in an empty dict
+* statistics is an empty dict
 * errors is a string describing the error that happened
 
 ### possible errors
