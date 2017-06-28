@@ -3,7 +3,7 @@ from celery import Celery
 from redis import Redis
 import process_request
 import data_ops
-from logger import log_info, get_latest_log_messages
+from logger import log_info, log_error, get_latest_log_messages
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
@@ -35,6 +35,12 @@ def index():
 
 @app.route('/djvujson/<string:sha1>/<int:page>.json')
 def request_page(sha1, page):
+  #check if celery is active
+  if celery.control.inspect().active() is None:
+    response = jsonify(process_request.build_error_response("Celery is not active."))
+    log_error(error_msg="Celery is not active.")
+    set_no_cache(response)
+    return response
   #check if the desired page is already cached
   #NOTE: this is actually not required within the current app configuration...
   #...because atm the nginx server serves the cached file if available and...

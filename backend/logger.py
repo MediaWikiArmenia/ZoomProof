@@ -24,10 +24,13 @@ def log_info(sha1, filename, page, info_msg):
   else:
     log_info.info("file: {} - {}, {}".format(sha1, filename, info_msg))
 
-def log_error(sha1, filename, page, error_msg):
+def log_error(sha1=None, filename=None, page=None, error_msg=""):
   """log an error event"""
   log_error = logging.getLogger('log_error')
-  log_error.error("file: {} - {}, page: {}, {}".format(sha1, filename, page, error_msg))
+  if sha1 is not None and filename is not None and page is not None:
+    log_error.error("file: {} - {}, page: {}, {}".format(sha1, filename, page, error_msg))
+  else:
+    log_error.error("{}".format(error_msg))
 
 def init_loggers():
   """initialize the loggers"""
