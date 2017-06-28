@@ -26,6 +26,19 @@ def set_no_cache(response):
   response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
   response.headers['Pragma'] = 'no-cache'
 
+def get_celery_status():
+  """return None if celery is unavailable, return list of currently queued tasks if it is"""
+  return celery.control.inspect().active()
+
+@app.route('/status')
+def status():
+  """return a short status text describing whether celery is active or not"""
+  celery_status = get_celery_status()
+  if celery_status is None:
+    return "Celery is down."
+  else:
+    return "Celery is up. <br/><br/> task queue: <br/>" + str(celery_status)
+
 @app.route('/')
 def index():
   """return an index.html file as a README description of the tool
@@ -43,7 +56,7 @@ def request_page(sha1, page):
     return return_cached_page_json(sha1, page)
   #if it is not yet cached
   #check if celery is active
-  elif celery.control.inspect().active() is None:
+  elif get_celery_status() is None:
     response = jsonify(process_request.build_error_response("Celery is not active."))
     log_error(error_msg="Celery is not active.")
     set_no_cache(response)
