@@ -2,3 +2,6 @@
 *.swo
 __pycache__
 *.rdb
+debug.py
+test.html
+test.pdf

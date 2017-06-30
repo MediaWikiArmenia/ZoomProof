@@ -2,7 +2,7 @@ import os
 import json
 from collections import OrderedDict
 import djvu_to_xml
-import xml_to_json
+from xml_to_json import XMLToJSON
 import wiki_api
 import data_ops
 from logger import log_error, log_info
@@ -24,7 +24,7 @@ def process_single_page(fileinfo, file_sha1, page):
      - convert xml to JSON
      - save JSON as file in appropriate path"""
   xml_string = djvu_to_xml.convert_from_file(config.server['tmpdir'] + fileinfo['filename'], page)
-  json_object = xml_to_json.convert_from_string(xml_string)
+  json_object = XMLToJSON().convert_from_string(xml_string)
   data_ops.save_json_page(json_object, file_sha1, page)
 
 def sanity_check_request(file_sha1, page):
