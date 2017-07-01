@@ -8,7 +8,7 @@ from logger import log_info, log_error, get_latest_log_messages
 import config
 
 #ALTER REDIS HOSTNAME BETWEEN LOCAL AND PRODUCTION HERE (check config.py)
-redis_hostname = config.server['redis_hostname_local']
+redis_hostname = config.server['redis_hostname_production']
 redis_port = config.server['redis_port']
 
 app = Flask(__name__)
