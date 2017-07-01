@@ -1,7 +1,8 @@
 server = {
   'cache_before':               5,
   'cache_after':                10,
-  'datadir':                    './data/djvujson/',
+  'datadir_djvujson':           './data/djvujson/',
+  'datadir_pdfjson':            './data/pdfjson/',
   'logdir':                     './log/',
   'tmpdir':                     './tmp/',
   'user_agent':                 'ZoomProof',

@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, render_template
 from celery import Celery
 from redis import Redis
-import process_request
 import data_ops
+from process_request_djvu import DJVURequestProcessor
+from process_request_pdf import PDFRequestProcessor
 from logger import log_info, log_error, get_latest_log_messages
 import config
 
@@ -21,6 +22,9 @@ celery.conf.update(app.config)
 redis = Redis(host=redis_hostname, port=redis_port)
 redis.delete('zoomproof_processing')
 
+djvu_processor = DJVURequestProcessor()
+pdf_processor = PDFRequestProcessor()
+
 def set_no_cache(response):
   """set the header of this response to no-cache"""
   response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -29,6 +33,13 @@ def set_no_cache(response):
 def get_celery_status():
   """return None if celery is unavailable, return list of currently queued tasks if it is"""
   return celery.control.inspect().active()
+
+@app.route('/')
+def index():
+  """return an index.html file as a README description of the tool
+     and showing the latest (define in config) messages from the error and info log"""
+  latest_errors, latest_infos = get_latest_log_messages()
+  return render_template('index.html', latest_errors=latest_errors, latest_infos=latest_infos)
 
 @app.route('/status')
 def status():
@@ -39,51 +50,41 @@ def status():
   else:
     return "Celery is up. <br/><br/> task queue: <br/>" + str(celery_status)
 
-@app.route('/')
-def index():
-  """return an index.html file as a README description of the tool
-     and showing the latest (define in config) messages from the error and info log"""
-  latest_errors, latest_infos = get_latest_log_messages()
-  return render_template('index.html', latest_errors=latest_errors, latest_infos=latest_infos)
-
 @app.route('/djvujson/<string:sha1>/<int:page>.json')
-def request_page(sha1, page):
+def request_page_djvu(sha1, page):
+  return request_page(sha1, page, djvu_processor, 'djvu')
+
+@app.route('/pdfjson/<string:sha1>/<int:page>.json')
+def request_page_pdf(sha1, page):
+  return request_page(sha1, page, pdf_processor, 'pdf')
+
+def request_page(sha1, page, processor, filetype):
   #check if the desired page is already cached
-  #NOTE: this is actually not required within the current app configuration...
-  #...because atm the nginx server serves the cached file if available and...
-  #...redirects to the flask app only if no cached file is available
-  if data_ops.json_page_is_cached(sha1, page):
-    return return_cached_page_json(sha1, page)
+  if processor.page_is_cached(sha1, page):
+    return jsonify(processor.return_cached_page(sha1, page))
   #if it is not yet cached
   #check if celery is active
   elif get_celery_status() is None:
-    response = jsonify(process_request.build_error_response("Celery is not active."))
+    response = jsonify(processor.build_error_response("Celery is not active."))
     log_error(error_msg="Celery is not active.")
     set_no_cache(response)
     return response
   else:
-    error_json, fileinfo = process_request.sanity_check_request(sha1, page)
+    error_json, fileinfo = processor.sanity_check_request(sha1, page)
     #when something is not right with the request, return an error
     if error_json:
       return jsonify(error_json)
     #when the request is valid
     else:
       #asynchronous call to invoke processing the file
-      process_request_async.delay(sha1, page, fileinfo)
-      response = jsonify(process_request.build_error_response("Processing the file, check back in a minute."))
+      process_request_async.delay(sha1, page, fileinfo, filetype)
+      response = jsonify(processor.build_error_response("Processing the file, check back in a minute."))
       set_no_cache(response)
       return response
 
-def return_cached_page_json(sha1, page):
-  """return json of the cached page"""
-  #NOTE: as of now the logger won't log the correct filename here (because we won't know it at this point)
-  #but this is not an issue because the webserver will usually serve the static .json files once processed
-  log_info(sha1, "", page, "Page succesfully returned.")
-  return jsonify(data_ops.get_cached_json_page(sha1, page))
-
 @celery.task(name='process_request_async')
-def process_request_async(sha1, page, fileinfo):
-  """Background task to process a djvu file in a non-blocking way."""
+def process_request_async(sha1, page, fileinfo, filetype):
+  """Background task to process a file in a non-blocking way."""
   #we are maintaining a redis set with all sha1s we are currently converting
   #if we are trying to trigger the same conversion twice, it will simply return here
   #on the second attempt
@@ -92,6 +93,9 @@ def process_request_async(sha1, page, fileinfo):
 
   #add this sha1 to the redis set
   redis.sadd('zoomproof_processing', sha1)
-  process_request.invoke_conversion(sha1, page, fileinfo)
+  if filetype == 'djvu':
+    djvu_processor.invoke_conversion(sha1, page, fileinfo)
+  elif filetype == 'pdf':
+    pdf_processor.invoke_conversion(sha1, page, fileinfo)
   #remove this sha1 from the redis set once done
   redis.srem('zoomproof_processing', sha1)

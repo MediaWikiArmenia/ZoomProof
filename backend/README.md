@@ -22,3 +22,7 @@ the server needs 3 components to run
 `/djvujson/sha1/page.json`
  * will return `{page}.json` for the `.djvu` file specified by the `sha1` if already cached
  * will start conversion of the `.djvu` file specified by the `sha1` if not already cached and return a JSON notification about that
+
+`/pdfjson/sha1/page.json`
+ * will return `{page}.json` for the `.pdf` file specified by the `sha1` if already cached
+ * will start conversion of the `.pdf` file specified by the `sha1` if not already cached and return a JSON notification about that
