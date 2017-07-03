@@ -9,7 +9,8 @@ def convert_from_file(filepath, page):
       '-',                      #no output file specified means sending the output to stdout
       '-f', '{}'.format(page),  #first page to convert
       '-l', '{}'.format(page),  #last page to convert
-      '-bbox'                   #output as xhtml with bounding box coordinates for every word
+      '-bbox',                  #output as xhtml with bounding box coordinates for every word
+      '-layout'                 #try to enforce the output in text reading order
       ]
   #run the command, store its output converted from byte array to utf-8 python3 string
   command_output_str = subprocess.check_output(command_line_args).decode('utf-8')
