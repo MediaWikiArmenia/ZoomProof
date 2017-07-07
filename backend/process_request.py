@@ -9,11 +9,11 @@ class RequestProcessor:
     """initialize"""
     pass
 
-  def build_error_response(self, error_text):
+  def build_error_response(self, error_text, error_type):
     """if for some reason we can't return the desired page as JSON
        we want to return a custom error response in the same format"""
     return OrderedDict([
-      ('errors', error_text),
+      ('errors', "Error {}, {}".format(str(error_type), error_text)),
       ('size', {}),
       ('statistics', {}),
       ('map', [])
@@ -46,23 +46,24 @@ class RequestProcessor:
     if 'error' in fileinfo:
       error_msg = fileinfo['error']
       log_error(file_sha1, filename, page, error_msg)
-      return self.build_error_response(error_msg), {}
-    #if the file is not a .djvu
+      return self.build_error_response(error_msg, 1), {}
+    #if the file does not have the right mime type
     elif self.filetype not in fileinfo['mime'].lower():
       error_msg = "Not a valid {} file.".format(self.filetype)
       log_error(file_sha1, filename, page, error_msg)
-      return self.build_error_response(error_msg), {}
+      return self.build_error_response(error_msg, 2), {}
     #if the desired page is greater than the maximum page in the file
     elif page > fileinfo['pagecount'] or page < 1:
       error_msg = "Page doesn't exist."
       log_error(file_sha1, filename, page, error_msg)
-      return self.build_error_response(error_msg), {}
+      return self.build_error_response(error_msg, 3), {}
     else:
       return {}, fileinfo
 
   def invoke_conversion(self, file_sha1, page, fileinfo):
     """entry point for processing a valid request 
        by sha1 checksum for the file, a page number and the fileinfo dictionary"""
+    log_info(file_sha1, fileinfo['filename'], None, "Starting new task to download and convert the file.")
     #download the file
     data_ops.download_file(fileinfo['url'], fileinfo['filename'])
     log_info(file_sha1, fileinfo['filename'], None, "Succesfully downloaded file.")

@@ -65,7 +65,7 @@ def request_page(sha1, page, processor, filetype):
   #if it is not yet cached
   #check if celery is active
   elif get_celery_status() is None:
-    response = jsonify(processor.build_error_response("Celery is not active."))
+    response = jsonify(processor.build_error_response("Celery is not active.", 4))
     log_error(error_msg="Celery is not active.")
     set_no_cache(response)
     return response
@@ -78,7 +78,7 @@ def request_page(sha1, page, processor, filetype):
     else:
       #asynchronous call to invoke processing the file
       process_request_async.delay(sha1, page, fileinfo, filetype)
-      response = jsonify(processor.build_error_response("Processing the file, check back in a minute."))
+      response = jsonify(processor.build_error_response("Processing the file, check back in a minute.", 0))
       set_no_cache(response)
       return response
 
