@@ -2,14 +2,26 @@ from collections import OrderedDict
 import json
 from statistics import calculate_mean, calculate_median, calculate_mode
 
+textnode_name_lookup = {
+    'w': 'word',
+    'c': 'char',
+    'l': 'line',
+    'ph': 'paragraph',
+    'r': 'region',
+    'pc': 'pagecolumns'
+}
+
 class ToJSONConverter:
   def __init__(self):
     """initialize"""
     pass
 
-  def _get_width_height_statistics(self, width_list, height_list):
+  def _get_statistics_single_category(self, width_list, height_list):
     """calculate some statistics such as max, min, average, median and mode
-       of the widths and heights of all text objects on the page"""
+       of the widths and heights of all text objects in one category"""
+    if not width_list or not height_list:
+      return {}
+
     width_list, height_list = sorted(width_list), sorted(height_list)
     #width, height statistics
     max_width, max_height = max(width_list), max(height_list)
@@ -19,13 +31,15 @@ class ToJSONConverter:
     mode_width, mode_height = calculate_mode(width_list), calculate_mode(height_list)
 
     return {
-        'max': [max_width, max_height],
-        'min': [min_width, min_height],
-        'average': [average_width, average_height],
-        'median': [median_width, median_height],
-        'mode': [mode_width, mode_height]
+        'number': len(width_list),
+        'dimensions': {
+          'max': [max_width, max_height],
+          'min': [min_width, min_height],
+          'average': [average_width, average_height],
+          'median': [median_width, median_height],
+          'mode': [mode_width, mode_height]
+          }
         }
-
 
   def _convert_coordinates_to_dimensions(self, coordinates):
     """converting coordinates of the text bounding box from
@@ -49,30 +63,46 @@ class ToJSONConverter:
     page_width, page_height = self._get_page_size()
     return {'width': page_width, 'height': page_height}
 
-  def _build_map_object(self, width_list, height_list):
+  def _build_map_object(self, cat_width_lists, cat_height_lists, all_x, all_y):
     """building up the map json object one node at a time"""
     map_json = []
     for node in self.textnodes:
       #create a single json map node as a dictionary
       coordinates = self._get_coordinates(node)
+      all_x.append(coordinates[0])
+      all_x.append(coordinates[2])
+      all_y.append(coordinates[1])
+      all_y.append(coordinates[3])
       left_x, top_y, width, height = self._convert_coordinates_to_dimensions(coordinates)
-      width_list.append(width)
-      height_list.append(height)
+      text_category = self._text_category(node.tag)
       json_node = {
         't': node.text,
         'c': [left_x, top_y, width, height],
-        'e': self._text_category(node.tag)
+        'e': text_category
       }
+      cat_width_lists[text_category].append(width)
+      cat_height_lists[text_category].append(height)
       map_json.append(json_node)
     return map_json
 
-  def _build_statistics_object(self, width_list, height_list):
-    """return the statistics json object"""
-    if width_list and height_list:
-      wh_statistics = self._get_width_height_statistics(width_list, height_list)
-    else:
-      wh_statistics = {}
-    return wh_statistics
+  def _build_statistics_object(self, cat_width_lists, cat_height_lists, all_x, all_y):
+    """calculate some statistics such as max, min, average, median and mode
+       of the widths and heights of all text objects in each category on the page"""
+    statistics = {}
+    #statistics for each category
+    for cat in textnode_name_lookup.keys():
+      cat_stats = self._get_statistics_single_category(cat_width_lists[cat], cat_height_lists[cat])
+      if cat_stats:
+        statistics[textnode_name_lookup[cat]] = cat_stats
+    #overall statistics
+    total_stats = self._get_statistics_single_category([width for width_list in cat_width_lists.values() for width in width_list],
+                                                       [height for height_list in cat_height_lists.values() for height in height_list])
+    if total_stats:
+      statistics['total'] = total_stats
+      statistics['total']['area'] = [min(all_x), min(all_y), max(all_x), max(all_y)]
+
+    return statistics
+
 
   def convert_from_string(self, document_string):
     """convert an xml string into the desired JSON object representation"""
@@ -82,9 +112,11 @@ class ToJSONConverter:
     errors_json = self._build_errors_object()
     size_json = self._build_size_object()
 
-    width_list, height_list = [], []
-    map_json = self._build_map_object(width_list, height_list)
-    statistics_json = self._build_statistics_object(width_list, height_list)
+    cat_width_lists = {'w': [], 'c': [], 'l': [], 'ph': [], 'r': [], 'pc': []}
+    cat_height_lists = {'w': [], 'c': [], 'l': [], 'ph': [], 'r': [], 'pc': []}
+    all_x, all_y = [], []
+    map_json = self._build_map_object(cat_width_lists, cat_height_lists, all_x, all_y)
+    statistics_json = self._build_statistics_object(cat_width_lists, cat_height_lists, all_x, all_y)
 
     json_object = OrderedDict([
         ('errors', errors_json),
